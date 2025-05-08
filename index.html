@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Mysterious Words Competition</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="info-panel">
+  <div class="team">
+    <h2>TEAM 1</h2>
+  </div>
+
+  <div class="timer">
+    <div id="game-timer">40:00</div>
+    <span id="word-submitted">WORD SUBMITTED: 0</span>
+  </div>
+
+  <div class="team">
+    <h2>TEAM 1</h2>
+  </div>
+</div>
+
+<div class="mode-status">
+  <div id="input-mode">MODE: <strong>CODE</strong></div>
+  <div id="input-view"></div>
+
+  <div id="keyboard" class="keyboard">
+    <div id="row1" class="row-keyboard"></div>
+    <div id="row2" class="row-keyboard"></div>
+    <div id="row3" class="row-keyboard"></div>
+  </div>
+</div>
+
+<div id="countdown"></div>
+
+<audio id="sound-correct" src="sounds/correct.mp3" preload="auto"></audio>
+<audio id="sound-typing" src="sounds/typing.mp3" preload="auto"></audio>
+<audio id="sound-countdown" src="sounds/countdown.mp3" preload="auto"></audio>
+<audio id="sound-wrong" src="sounds/wrong.mp3" preload="auto"></audio>
+
+<script src="script.js"></script>
+</body>
+</html>
