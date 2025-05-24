@@ -15,10 +15,10 @@ body {
   display: flex;
   justify-content: space-around;
   align-items: last baseline;
-  background-color: #222;
+  background-color: #017878;
   color: white;
   padding: 10px;
-  padding-bottom: 30px;
+  padding-bottom: 10px;
 }
 
 .watermark {
@@ -113,7 +113,7 @@ body {
   width: 100px;
   height: 100px;
   font-size: 1.5rem;
-  background-color: #d87d4a;
+  background-color: #a3d376;
   color: white;
   border: none;
   border-radius: 12px;
@@ -128,17 +128,17 @@ body {
 
 .key-button.pressed {
   transform: scale(0.95);
-  background-color: #a4511e;
+  background-color: #83b157;
 }
 
 .key-button.pressed-false {
   animation: validOrInvalid 0.4s ease-out;
-  background-color: #a41e1e;
+  background-color: #fd6f6f;
 }
 
 .key-button.valid {
   animation: validOrInvalid 0.4s ease-out;
-  background-color: limegreen;
+  background-color: #83b157;
 }
 
 @keyframes validOrInvalid {

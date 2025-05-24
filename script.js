@@ -13,7 +13,7 @@ const soundCountdown = document.getElementById("sound-countdown");
 const soundWrong = document.getElementById('sound-wrong');
 const soundCorrect = document.getElementById('sound-correct');
 
-let gameTime = 2400;
+let gameTime = 900;
 let correctWord = 0;
 let keyLayout = 0;
 let wordList = [];
@@ -53,7 +53,7 @@ function updateTimers() {
 }
 
 function resetGame() {
-  gameTime = 2400;
+  gameTime = 900;
   correctWord = 0;
   updateTimers();
   inputBuffer = "";
@@ -222,9 +222,9 @@ document.addEventListener('keydown', (e) => {
     } else {
       if (mode === "code") {
         mode = "word";
-        inputView.style.color = '#d87d4a';
-        inputView.style.border = '2px dashed #d87d4a';
-        inputMode.innerHTML = `<div id="input-mode">MODE: <strong style="color:#d87d4a">${mode.toUpperCase()}</strong></div>`;
+        inputView.style.color = '#83b157';
+        inputView.style.border = '2px dashed #83b157';
+        inputMode.innerHTML = `<div id="input-mode">MODE: <strong style="color:#83b157">${mode.toUpperCase()}</strong></div>`;
       } else {
         mode = "code"
         inputView.style.color = '#000';
