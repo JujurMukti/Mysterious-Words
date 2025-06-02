@@ -7,11 +7,13 @@ const keyboard = document.getElementById("keyboard");
 const firstRow = document.getElementById("row1");
 const secondRow = document.getElementById("row2");
 const thirdRow = document.getElementById("row3");
+const team = document.querySelectorAll('.team h2');
 
 const soundTyping = document.getElementById("sound-typing");
 const soundCountdown = document.getElementById("sound-countdown");
 const soundWrong = document.getElementById('sound-wrong');
 const soundCorrect = document.getElementById('sound-correct');
+const soundAttention = document.getElementById('sound-attention');
 
 let gameTime = 900;
 let correctWord = 0;
@@ -22,19 +24,23 @@ let isCountingDown = false;
 let gameActive = false;
 let valid = false;
 let endgame = false;
+let editorMode = false;
 let countdownInterval = null;
+let teamName = team[0].textContent;
+let isRed = false;
 let inputBuffer = "";
 let mode = "code";
 let getWords = [];
 let submittedWords = [];
 let activeLetters = [];
+let codeOpened = { AIBMNKRP: 0, UETWH: 0, OYL: 0 };
 let positions = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 16, 18, 19, 24, 25, 26];
 let letterPositions = ["W", "E", "R", "T", "Y", "U", "I", "O", "P", "A", "H", "K", "L", "B", "N", "M"];
 
 const letterGroups = {
-  group1: ["A", "I", "B", "M", "N", "K", "R"],
+  group1: ["A", "I", "B", "M", "N", "K", "R", "P"],
   group2: ["U", "E", "T", "W", "H"],
-  group3: ["O", "Y", "L", "P"]
+  group3: ["O", "Y", "L"]
 };
 
 const codeMap = {
@@ -50,6 +56,11 @@ function updateTimers() {
   const minutes = Math.floor(gameTime / 60);
   const seconds = gameTime % 60;
   gameTimerDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  if (isRed && gameTime === 719) {
+    isRed = false;
+    gameTimerDisplay.style.color = '#fff';
+    setTimeout(() => playSound(soundAttention), 1000);
+  }
 }
 
 function resetGame() {
@@ -58,6 +69,7 @@ function resetGame() {
   updateTimers();
   inputBuffer = "";
   mode = "code";
+  teamName = team.textContent;
   inputMode.textContent = "MODE: CODE";
   inputView.textContent = "";
   wordSubmitted.textContent = "WORD SUBMITTED: 0";
@@ -71,7 +83,12 @@ function resetGame() {
   gameActive = false;
   valid = false;
   endgame = false;
+  editorMode = false;
+  isRed = false;
+  gameTimerDisplay.style.color = '#fff';
+  team.forEach((list) => list.textContent = `TEAM'S NAME`);
   countdownInterval = null;
+  codeOpened = { AIBMNKRP: 0, UETWH: 0, OYL: 0 };
 }
 
 function startCountdown(text) {
@@ -98,6 +115,9 @@ function startCountdown(text) {
       if (text === 'GAME OVER!') {
         console.log(`Jumlah jawaban benar: ${correctWord}`);
         console.log(`Jumlah kata yang dimasukkan: ${submittedWords.length}`);
+        console.log(`Kode "AIBMNKRP": ${codeOpened['AIBMNKRP']}`);
+        console.log(`Kode "UETWH": ${codeOpened['UETWH']}`);
+        console.log(`Kode "OYL": ${codeOpened['OYL']}`);
         inputView.textContent = ""; 
         gameActive = false;
         endgame = true;
@@ -179,6 +199,7 @@ function handleSubmit() {
     if (codeMap[input]) {
       codeMap[input].forEach(letter => activeLetters.push(letter));
       codeMap[input].forEach(letter => getWords.push(letter));
+      codeOpened[codeMap[input].join('')] = 1;
       playSound(soundCorrect);
       updateKeyboard();
     } else {
@@ -217,9 +238,11 @@ document.addEventListener('keydown', (e) => {
   if (e.code === 'Space') {
     if (endgame) return;
 
-    if (!gameActive && !isCountingDown) {
-      startCountdown('START!');
-    } else {
+    if (!gameActive) {
+      if (editorMode) {
+        if (!teamName.endsWith(' ')) teamName += ' ';
+      } else if (!isCountingDown) startCountdown('START!');
+    } else if (!isRed) {
       if (mode === "code") {
         mode = "word";
         inputView.style.color = '#83b157';
@@ -238,16 +261,35 @@ document.addEventListener('keydown', (e) => {
     return;
   }
 
-  if (!gameActive) return;
+  if (e.key === 'Shift') { 
+    if (!gameActive) {
+      if (editorMode) {
+        editorMode = false;
+        wordSubmitted.textContent = "WORD SUBMITTED: 0";
+      } else {
+        editorMode = true;
+        teamName = '';
+        wordSubmitted.textContent = "EDITOR MODE";
+    }
+    }
+  }
 
-  if (e.key === 'Enter') {
-    handleSubmit();
-    return;
+  if (e.key === 'Control') {
+    if (!gameActive && editorMode) {
+      isRed = !isRed;
+      gameTimerDisplay.style.color = isRed ? '#fd6f6f' : '#fff';
+    }
   }
 
   if (e.key.length === 1 && e.key.match(/[a-zA-Z]/)) {
-    if (mode === 'word' && inputBuffer.length < 40) {
-    const button = document.getElementById(`key-${e.key.toUpperCase()}`);
+    if (!gameActive) {
+      if (editorMode) {
+        teamName += e.key.toUpperCase();
+        team.forEach((list) => list.textContent = teamName);
+      }
+    } else if (!isRed) {
+      if (mode === 'word' && inputBuffer.length < 40) {
+        const button = document.getElementById(`key-${e.key.toUpperCase()}`);
       if (button) {
         if (activeLetters.includes(e.key.toUpperCase())) {
           inputBuffer += e.key.toUpperCase();
@@ -261,29 +303,44 @@ document.addEventListener('keydown', (e) => {
           button.classList.add("pressed-false");
           setTimeout(() => button.classList.remove("pressed-false"), 100);
         }
-      } 
-    } else if (inputBuffer.length < 40) {
-      inputBuffer += e.key.toUpperCase();
-      inputView.textContent = inputBuffer;
-      playSound(soundTyping); 
-    }
-  }
-
-  if (e.key.length === 1 && e.key.match(/[0-9]/)) {
-    if (mode === 'code') {
-      inputBuffer += e.key.toUpperCase();
-      inputView.textContent = inputBuffer;
-      playSound(soundTyping);
+       } 
+      } else if (inputBuffer.length < 40) {
+       inputBuffer += e.key.toUpperCase();
+       inputView.textContent = inputBuffer;
+       playSound(soundTyping); 
+      }
     }
   }
 
   if (e.key === 'Backspace') {
-    if (inputBuffer.length > 0) {
+    if (!gameActive) {
+      if (editorMode) {
+        teamName = teamName.slice(0, -1);
+        team.forEach((list) => list.textContent = teamName);
+      }
+    } else if (!isRed) {
+      if (inputBuffer.length > 0) {
       inputBuffer = inputBuffer.slice(0, -1);
       inputView.textContent = inputBuffer;
       playSound(soundTyping);
     }
     return;
+    }
+  }
+
+  if (!gameActive) return;
+
+  if (e.key === 'Enter' && !isRed) {
+    handleSubmit();
+    return;
+  }
+
+  if (e.key.length === 1 && e.key.match(/[0-9]/) && !isRed) {
+    if (mode === 'code') {
+      inputBuffer += e.key.toUpperCase();
+      inputView.textContent = inputBuffer;
+      playSound(soundTyping);
+    }
   }
 });
 
@@ -291,6 +348,7 @@ setInterval(() => {
   if (!gameActive) return;
   gameTime--;
   if (gameTime === 3) startCountdown('GAME OVER!');
+  if (gameTime === 723 && isRed) startCountdown('ATTENTION!');
   updateTimers();
 }, 1000);
 
