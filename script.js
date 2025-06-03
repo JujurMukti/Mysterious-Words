@@ -44,12 +44,12 @@ const letterGroups = {
 };
 
 const codeMap = {
-  12: letterGroups.group1,
-  BMR742: letterGroups.group1,
-  13: letterGroups.group2,
-  U2ETWH: letterGroups.group2,
-  14: letterGroups.group3,
-  YOLO55: letterGroups.group3
+  A3F9D: letterGroups.group1,
+  B84E9: letterGroups.group1,
+  K15G7: letterGroups.group2,
+  F2C8J: letterGroups.group2,
+  D49H2: letterGroups.group3,
+  J96B3: letterGroups.group3
 };
 
 function updateTimers() {
